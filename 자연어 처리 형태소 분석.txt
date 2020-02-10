@@ -1,0 +1,108 @@
+Word Embedding
+빈도수 기반 표현은 단어간 의미차를 표현할 수 없다.
+단어 자체 의미를 다차원 공간에서 벡터화 필요
+단어들 사이의 유사도 측정가능
+단어들간의 평균, 및 연산을 통해 추론 가능
+
+백터계산 개념
+King - Man + Woman = Queen
+
+
+
+Continuous Bag of Words
+주변에 있는 단어들을 가지고, 중간에 있는 단어들을 예측하는 방법
+"The fat cat sat on the mat"
+{"The", "fat", "cat", "on", "the", "mat"}으로부터 (context word), sat(center word)을 예측
+주변 단어가 x값, 센터단어가 y값이라고 생각하자
+
+윈도우 슬라이딩을 통해 데이터 셋 생성
+중심단어, 주변단어(중심단어를 기준으로 몇개의 단어까지 볼것이냐?)
+
+중심단어와 주변단어를 나눈다.
+
+[The] (fat cat) sat on the mat. 중심단어 - [1, 0, 0, 0, 0, 0, 0], 주변단어 - [0, 1, 1, 0, 0, 0, 0]
+(The) [fat] (cat sat) on the mat. 중심단어 - [0, 1, 0, 0, 0, 0, 0], 주변단어 - [1, 0, 1, 1, 0, 0, 0]
+(The fat) [cat] (sat on) the mat. 중심단어 - [0, 0, 1, 0, 0, 0, 0], 주변단어 - [1, 1, 0, 1, 1, 0, 0]
+The (fat cat) [sat] (on the) mat. 중심단어 - [0, 0, 0, 1, 0, 0, 0], 주변단어 - [0, 1, 1, 0, 1, 1, 0]
+The fat (cat sat) [on] (the mat.) 중심단어 - [0, 0, 0, 0, 1, 0, 0], 주변단어 - [0, 0, 1, 1, 0, 1, 1]
+The fat cat (sat on) [the] (mat.) 중심단어 - [0, 0, 0, 0, 0, 1, 0], 주변단어 - [0, 0, 0, 1, 1, 0, 1]
+The fat cat sat (on the) [mat.] 중심단어 - [0, 0, 0, 0, 0, 0, 1], 주변단어 - [0, 0, 0, 0, 1, 1, 0]
+
+
+
+context word
+    nput layer                                                    center word
+                                
+fat
+cat                           projection layer                 output layer sat(one-hot vector)
+on
+the
+
+
+
+########################
+RNN(Recurrent Neural Network)
+
+일반 신경망(FFNets) 피드포워드 네트워크
+
+O->O->O->
+
+개별 데이터를 독립적으로 학습
+
+
+
+순환 신경망
+시계열 데이터 학습에 적합
+      __
+      l  l
+O->ㅁ-l->O
+      l__l
+
+
+
+은닉층의 노드에서 활성화 함수를 통해 나온 결과값을 출력과 은닉층 노드의 다음 계산의 입력으로 보냄
+RNN에서는 노드를 셀(CELL)이라고 하고, 이전의 값을 기억하려고 하는 일종의 메모리 역할을 수행한다.
+
+
+
+DNN은 문맥이라는 컨셉이 없다. 각각 개별적으로 봤다.
+
+시계열은 이전 데이터와 이후 데이터가 반드시 연관이 있다.
+
+
+      __
+      l  l
+O->ㅁ-l-> O
+      l__l    l
+    ________l
+   l  ___
+   l__l  l
+O->ㅁ-l->O
+      l__l
+
+
+은닉층 : ht = tanh(WxXt +WhHt-1 + b)
+출력층 : yt = f(Wyht + b)
+
+
+
+하이퍼볼릭 탄젠트와 시그모이드는 비슷하다.
+
+
+
+RNN은 항상 입력을 주변데이터랑 같이 주어야한다.
+
+
+
+Reccurent Neural Networks : Process Sequences
+
+one to one : 
+one to many : 이미지 하나 주고, 무엇이 있나, 또는 문맥속에 특정 조건에 부합하는 단어 찾기
+many to one : 긍정, 부정 또는 감정 파악
+many to many(1) : 기계번역, 챗봇
+many to many(2) : 프레임별로 데이터를 주면은 프레임별로 결과물을 준다.
+
+LSTM(Long Short-Term Memory)
+
+예측하는데 필요한 문맥이 가까이 있고, 많지 않다면, RNN은 이를 학습 가능
+정보를 필요로 하는 시점과, 필요로 하는 정보가 멀리 떨어져 있다면, 학습이 불가능
